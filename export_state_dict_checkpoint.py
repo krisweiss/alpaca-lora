@@ -9,11 +9,13 @@ from transformers import LlamaForCausalLM, LlamaTokenizer  # noqa: E402
 
 def export(
     base_model: str = "",
-    fine_tuned: str = ""
+    fine_tuned: str = "tloen/alpaca-lora-7b",
+    output_dir: str = "./ckpt"
+
 ):
     assert (
-        base_model and fine_tuned
-    ), "Please specify a --base_model and --fine_tuned, e.g. --base_model='../weights' --fine_tuned='../fine_tuned'"
+        base_model
+    ), "Please specify a --base_model, e.g. --base_model='decapoda-research/llama-7b-hf'"
 
     tokenizer = LlamaTokenizer.from_pretrained(base_model)
 
@@ -121,11 +123,11 @@ def export(
             else:
                 new_state_dict[new_k] = v
 
-    os.makedirs("./ckpt", exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
 
-    torch.save(new_state_dict, "./ckpt/consolidated.00.pth")
+    torch.save(new_state_dict, f"{output_dir}/consolidated.00.pth")
 
-    with open("./ckpt/params.json", "w") as f:
+    with open(f"{output_dir}/params.json", "w") as f:
         json.dump(params, f)
 
 if __name__ == "__main__":
